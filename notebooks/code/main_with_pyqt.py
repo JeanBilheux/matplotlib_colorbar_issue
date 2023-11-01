@@ -1,11 +1,16 @@
 import os
+from qtpy.QtWidgets import QMainWindow, QVBoxLayout
 from ipywidgets import interactive
 import ipywidgets as widgets
 from IPython.core.display import display, HTML
 import matplotlib.pyplot as plt
 import numpy as np
+from matplotlib.backends.backend_qt5agg import NavigationToolbar2QT as NavigationToolbar
+import matplotlib
 
-from code.hdf5_handler import Hdf5Handler
+from . import load_ui
+from .hdf5_handler import Hdf5Handler
+from .mplcanvas import MplCanvasColorbar, MplCanvas
 
 INTERPOLATION_METHODS = ['none', 'nearest', 'bilinear', 'bicubic', 'spline16',
                          'spline36', 'hanning', 'hamming', 'hermite', 'kaiser', 'quadric',
@@ -156,3 +161,31 @@ class Main:
                                                               description="Interpolation",
                                                               layout=widgets.Layout(width="300px")))
         display(v)
+
+
+class Interface(QMainWindow):
+
+    o_strain = None
+
+    def __init__(self, parent=None, o_strain=None):
+
+        super(QMainWindow, self).__init__(parent)
+        ui_full_path = os.path.join(os.path.dirname(__file__), "ui/ui_main_interface.ui")
+        self.ui = load_ui(ui_full_path, baseinstance=self)
+
+        self.o_strain = o_strain
+
+        def _matplotlib(parent=None, widget=None):
+            sc = MplCanvas(parent, width=5, height=2, dpi=100)
+            # sc.axes.plot([0,1,2,3,4,5], [10, 1, 20 ,3, 40, 50])
+            toolbar = NavigationToolbar(sc, parent)
+            layout = QVBoxLayout()
+            layout.addWidget(toolbar)
+            layout.addWidget(sc)
+            widget.setLayout(layout)
+            return sc
+
+        self.ui.label.setText(f"Matplotlib version {matplotlib.__version__}")
+
+        self.matplotlib_widget = _matplotlib(parent=self,
+                                             widget=self.ui.widget)
