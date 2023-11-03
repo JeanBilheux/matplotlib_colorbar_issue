@@ -1,0 +1,17 @@
+name: colorbar_debug
+channels:
+  - conda-forge
+dependencies:
+  # base
+  - python
+  - numpy
+  # viz
+  - matplotlib
+  # io
+  - h5py
+  # qt
+  - qtpy>=1.9.0
+  - pyqt>=5.15,<6
+  # jupyter
+  - jupyterlab
+  - ipympl
