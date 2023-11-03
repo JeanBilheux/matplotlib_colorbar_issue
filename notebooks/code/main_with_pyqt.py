@@ -274,9 +274,15 @@ class Interface(QMainWindow):
                                                  interpolation=interpolation,
                                                  cmap=cmap,
                                                  alpha=0.5)
-        if self.colorbar:
-            self.colorbar.remove()
 
-        self.colorbar = self.ui.matplotlib_plot.fig.colorbar(im,
-                                                             ax=self.ui.matplotlib_plot.axes)
+        # locate the colorbar and force it to update
+        if self.colorbar:
+            self.colorbar.mappable = im
+            self.colorbar.update_normal(im)
+        else:
+            self.colorbar = self.ui.matplotlib_plot.fig.colorbar(
+                im,
+                ax=self.ui.matplotlib_plot.axes,
+            )
+
         self.ui.matplotlib_plot.draw()
